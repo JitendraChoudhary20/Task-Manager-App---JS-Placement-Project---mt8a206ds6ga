@@ -26,7 +26,7 @@ const new_task_btn = document.querySelector(".taskbtn");
 
 	function renderData(id) {
 		
-	document.getElementById(id).classList.toggle('popup-task');
+	document.getElementById(id).classList.toggle('show-popup-task');
 
 
 	};
@@ -74,8 +74,8 @@ const new_task_btn = document.querySelector(".taskbtn");
 		
 
 		const task_el = document.createElement('div');
-		task_el.classList.add('popup-task','show-popup-task');
-		task_el.setAttribute("id","count");
+		task_el.classList.add('popup-task');
+		task_el.setAttribute("id",`${count}`);
 		
         // task_el.setAttribute('ondrag','drag(event)');
 
