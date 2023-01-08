@@ -25,7 +25,8 @@ const new_task_btn = document.querySelector(".taskbtn");
 
 
 	function renderData(id) {
-		
+
+		// console.log(id);
 	document.getElementById(id).classList.toggle('show-popup-task');
 
 
@@ -87,7 +88,7 @@ const new_task_btn = document.querySelector(".taskbtn");
         const discription_content_el = document.createElement('div');
 		discription_content_el.classList.add('discription_content');
 
-		let statusComponent = document.createElement('div');
+		const statusComponent = document.createElement('div');
 				statusComponent.classList.add('mb-3');
 
 	
@@ -203,6 +204,7 @@ const new_task_btn = document.querySelector(".taskbtn");
 		const open = document.getElementById("open");
 
 		outerdiv.appendChild(task_el);
+		console.log(outerdiv);
 		open.appendChild(outerdiv);
 		
 
