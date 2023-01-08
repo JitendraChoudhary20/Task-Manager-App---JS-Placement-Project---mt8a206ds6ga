@@ -1,4 +1,3 @@
-
 const new_task_btn = document.querySelector(".taskbtn");
 
 	const list_el = document.querySelector("#tasks");
@@ -20,15 +19,20 @@ const new_task_btn = document.querySelector(".taskbtn");
         
 	});
 
+	function deleteOuterDiv(){
+		document.getElementById(`task${count}`).classList.add('hideDiv');
+	}
+
 
 	function renderData(id) {
 		
 	document.getElementById(id).classList.toggle('popup-task');
 
-		// task_el.setAttribute('class', 'show-popup-');
-        
+
 	};
 
+
+	let count = 1;
 
     add.addEventListener('click',()=>{
         if(title.value=="" || discription_content.value==''){
@@ -40,27 +44,38 @@ const new_task_btn = document.querySelector(".taskbtn");
         const discription_value = discription_content.value;
 
 		const outerdiv = document.createElement('div');
-		outerdiv.setAttribute('id','task1');
+		outerdiv.setAttribute('id',`task${count}`);
 		outerdiv.classList.add('task');
 		outerdiv.setAttribute('draggable','true');
         outerdiv.setAttribute('ondragstart','drag(event)');
-		outerdiv.setAttribute('ondblclick',`renderData(${1})`);
+		outerdiv.setAttribute('ondblclick',`renderData(${count})`);
+
 		const ptag = document.createElement('p');
 		ptag.setAttribute('id','ptask');
-
 		ptag.innerHTML=task;
+
 		const ptag2 = document.createElement('p');
 		ptag2.setAttribute('id','pdiscription');
 		ptag2.innerHTML = discription_value;
+
+		const delouterbtn = document.createElement('button');
+		delouterbtn.setAttribute('id','delouterdiv');
+		delouterbtn.classList.add("btn-del-div");
+		delouterbtn.innerHTML='Delete';
+		delouterbtn.setAttribute('onclick','deleteOuterDiv()');
+
 		outerdiv.appendChild(ptag);
 		outerdiv.appendChild(ptag2);
+		outerdiv.appendChild(delouterbtn);
+
+
 
 		
 		
 
 		const task_el = document.createElement('div');
 		task_el.classList.add('popup-task','show-popup-task');
-		task_el.setAttribute("id","1");
+		task_el.setAttribute("id","count");
 		
         // task_el.setAttribute('ondrag','drag(event)');
 
@@ -72,18 +87,22 @@ const new_task_btn = document.querySelector(".taskbtn");
         const discription_content_el = document.createElement('div');
 		discription_content_el.classList.add('discription_content');
 
-		const status_content_el = document.createElement('div');
-		status_content_el.classList.add('status_content');
+		let statusComponent = document.createElement('div');
+				statusComponent.classList.add('mb-3');
+
+	
+
 		
 		
 
 		task_el.appendChild(title_content_el);
         task_el.appendChild(discription_content_el);  
-        task_el.appendChild(status_content_el);   
+        task_el.appendChild(statusComponent);   
 
 
 		
-
+		let titlelabel = document.createElement('label');
+		titlelabel.innerHTML = 'Title';
 
 		const title_input_el = document.createElement('input');
 		title_input_el.classList.add('text','form-control');
@@ -97,6 +116,9 @@ const new_task_btn = document.querySelector(".taskbtn");
 
 		title_input_el.setAttribute('readonly', 'readonly');
 
+		let discriptionlabel = document.createElement('label');
+		discriptionlabel.innerHTML = 'Discription';
+
         const discription_input_el = document.createElement('input');
 		discription_input_el.classList.add('text','form-control');
 		discription_input_el.type = 'text';
@@ -104,26 +126,74 @@ const new_task_btn = document.querySelector(".taskbtn");
 		discription_input_el.setAttribute('readonly', 'readonly');
         discription_input_el.setAttribute('id','dragtarget2');
 
-		const status_select = document.createElement('select');
 		
+		
+		
+				let statuslabel = document.createElement('label');
+				statuslabel.setAttribute('for', 'status1');
+				statuslabel.innerHTML = 'Status';
+				let selectStatus = document.createElement('select');
+				selectStatus.classList.add("form-control");
+				selectStatus.setAttribute('id', 'status1');
+				let option1 = document.createElement('option');
+				option1.setAttribute('value', 'open');
+				option1.innerHTML = 'Open';
+				let option2 = document.createElement('option');
+				option2.setAttribute('value', 'in-progress');
+				option2.innerHTML = 'In-Progress';
+				let option3 = document.createElement('option');
+				option3.setAttribute('value', 'review');
+				option3.innerHTML = 'Review';
+				let option4 = document.createElement('option');
+				option4.setAttribute('value', 'completed');
+				option4.innerHTML = 'Completed';
 
+				// let statusobj = document.getElementById('status1');
+
+				selectStatus.appendChild(option1);
+
+				// if(statusobj.value === 'open'){
+				// 	selectStatus.value = 'open';
+				// }
+				selectStatus.appendChild(option2);
+				// if(statusobj.value === 'in-progress'){
+				// 	selectStatus.value = 'in-progress';
+				// }
+				selectStatus.appendChild(option3);
+				// if(statusobj.value === 'review'){
+				// 	selectStatus.value = 'review';
+				// }
+				selectStatus.appendChild(option4);
+				// if(statusobj.value === 'completed'){
+				// 	selectStatus.value = 'completed';
+				// }
+				// selectStatus.disabled = 'true';
+		
+				statusComponent.appendChild(statuslabel);
+				statusComponent.appendChild(selectStatus);
+		
+				task_el.appendChild(statusComponent);
 
 
     
+		title_content_el.appendChild(titlelabel);
 		title_content_el.appendChild(title_input_el);
+
+		discription_content_el.appendChild(discriptionlabel);
 		discription_content_el.appendChild(discription_input_el);
+
 
 
 		const task_actions_el = document.createElement('div');
 		task_actions_el.classList.add('actions');
 		
 		const task_edit_el = document.createElement('button');
-		task_edit_el.classList.add('edit');
+		task_edit_el.classList.add('edit-btn');
 		task_edit_el.innerText = 'Edit';
 
 		const task_delete_el = document.createElement('button');
-		task_delete_el.classList.add('delete');
-		task_delete_el.innerText = 'X';
+		task_delete_el.classList.add('remove-btn');
+		task_delete_el.innerText = 'Remove';
 
 		task_actions_el.appendChild(task_edit_el);
 		task_actions_el.appendChild(task_delete_el);
@@ -156,7 +226,7 @@ const new_task_btn = document.querySelector(".taskbtn");
 		});
 
 		task_delete_el.addEventListener('click', (e) => {
-			open.removeChild(task_el);
+			outerdiv.removeChild(task_el);
 		});
 
 
@@ -164,7 +234,7 @@ const new_task_btn = document.querySelector(".taskbtn");
 	
     // console.log((obj));
     // tasks.push(obj);
-    // count++;
+    count++;
 	// renderData();
 
 	});
