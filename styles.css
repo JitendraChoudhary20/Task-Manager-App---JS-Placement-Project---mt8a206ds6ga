@@ -1,5 +1,4 @@
 
-
 .card{
     display: flex;
     flex-direction: column;
@@ -24,6 +23,7 @@
 #new-task-input{
     max-width:150px;
 }
+
 .task{
     /* display: flex;
     justify-content: space-around;
@@ -31,7 +31,7 @@
     background: rgb(158, 83, 83);
 }
 .text{
-    width: 340px;
+    min-width: 30px;
 }
 .wrapper{
     z-index: 4;
@@ -98,6 +98,8 @@ width: 200px;
 
 }
 .show-poup-task{
+    margin-top: 5px;
+    margin-bottom: 5px;
     z-index: 2;
     /* margin-top: 50px; */
     border: 3px solid black;
@@ -108,10 +110,12 @@ width: 200px;
     position: absolute;
     transform: translateX(300px);
     /* transform: translateY(100px); */
-    left: calc(50%-200px);
+    /* left: calc(50%-200px); */
     background: rgb(44, 157, 134);
 }
 .popup-task{
+    margin-top: 5px;
+    margin-bottom: 5px;
     z-index: 2;
     /* margin-top: 50px; */
     border: 3px solid black;
@@ -122,6 +126,27 @@ width: 200px;
     position: absolute;
     transform: translateX(300px);
     /* transform: translateY(100px); */
-    left: calc(50%-200px);
+    /* left: calc(50%-200px); */
     background: rgb(38, 165, 87);
+}
+.btn-del-div{
+    color: white;
+    background-color: red;
+    min-width: 50px;
+    height: 30px;
+    border-radius: 20%;
+}
+.hideDiv{
+    display: none;
+}
+.edit-btn{
+    background-color: yellowgreen;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+.remove-btn{
+      background-color: red;
+      border: 1px solid black;
+      border-radius: 5px; 
+        margin-left: 10px;
 }
