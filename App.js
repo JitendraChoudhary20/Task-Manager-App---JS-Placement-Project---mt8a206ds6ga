@@ -1,556 +1,279 @@
-const new_task_btn = document.querySelector(".taskbtn");
+const addButton = document.getElementById('addTaskButton'); //new task
+const closeAddTaskButton = document.getElementById('closeAddTask');
 
-	const list_el = document.querySelector("#tasks");
-	const wrapper_ele = document.querySelector('.wrapper');
-	const add = document.querySelector(".btn-outline-info");
-    const title = document.querySelector('#title');
+const popupAddTaskForm = () => {
+    document.getElementById('addTaskWrapper').classList.toggle('show-wrapper')
+    document.getElementById('addTaskWrapper').classList.toggle('wrapper')
+}
 
-    const discription_content = document.querySelector('#discription');
-
-	// let count = tasks.length + 1;
-
-	let status = document.getElementById('status').value;
-
-    
-
-	new_task_btn.addEventListener('click', () => {
-	
-		wrapper_ele.setAttribute('class', 'show-wrapper');
-        
-	});
-
-	function deleteOuterDiv(id){
-		console.log(id);
-		// document.getElementById(`task${id}`).classList.add('hideDiv');
-	}
+addButton.addEventListener('click', popupAddTaskForm);
+closeAddTaskButton.addEventListener('click', popupAddTaskForm);
 
 
-	function renderData(id) {
-		// console.log(id);
-		// document.getElementById(id).classList.toggle('show-popup-task');
-	};
+const addTaskButton = document.getElementById('addTask');
 
+// const localStorageKey = "tasks";
 
-	let count = 1;
+const getTasksArray = () => {
+    let array = localStorage.getItem('tasks');
 
-    add.addEventListener('click',()=>{
-        if(title.value=="" || discription_content.value==''){
-            alert("pls fill detail");
-            return;
-        }
+    if(!array){
+        return [];
+    }
 
-		const task = title.value;
-        const discription_value = discription_content.value;
+    return JSON.parse(array);
+}
 
-		const outerdiv = document.createElement('div');
-		outerdiv.setAttribute('id',`task${count}`);
+let tasksArray = getTasksArray();
+let count = 1;
+if(tasksArray.length != 0){
+	count = tasksArray[tasksArray.length - 1].id + 1;
+}
+
+const setTasksArray = () => {
+    const array = JSON.stringify(tasksArray);
+    localStorage.setItem('tasks', array);
+}
+
+const createTaskObject = () => {
+    let title = document.getElementById('title');
+    let status =document.getElementById('status');
+    let discription = document.getElementById('discription');
+
+    if(title.value === '' || discription.value === ''){
+        alert('Title or Discription should not be empty');
+        return;
+    }
+
+    let obj = {
+        id : count,
+        title : `${title.value}`,
+        status : `${status.value}`,
+        discription : `${discription.value}`
+    }
+
+    tasksArray.push(obj);
+	setTasksArray();
+
+    title.value = '';
+    discription.value = '';
+    status.value = 'open';
+
+    count++;
+
+    popupAddTaskForm(); 
+
+    renderData();
+}
+const clearInnerHtml = () => {
+    document.getElementById('open').innerHTML = '';
+    document.getElementById('in-progress').innerHTML = '';
+    document.getElementById('review').innerHTML = '';
+    document.getElementById('completed').innerHTML = '';
+}
+
+const showDetailTask=(id)=>{
+       document.getElementById(id).classList.toggle('show-popup-task');
+};
+const DeleteTask=(id)=>{
+	tasksArray=	tasksArray.filter((obj)=>{
+		if(id != obj.id){
+			return obj;
+		}
+	})
+	setTasksArray();
+	renderData();
+}
+
+const renderData = () => {
+    clearInnerHtml();
+    tasksArray.forEach((obj) => {
+        const outerdiv = document.createElement('div');
+		outerdiv.setAttribute('id',`task${obj.id}`);
 		outerdiv.classList.add('task');
 		outerdiv.setAttribute('draggable','true');
         outerdiv.setAttribute('ondragstart','drag(event)');
-		outerdiv.setAttribute('ondblclick',`renderData(${count})`);
+		outerdiv.setAttribute('ondblclick',`showDetailTask(${obj.id})`);
 
 		const ptag = document.createElement('p');
 		ptag.setAttribute('id','ptask');
-		ptag.innerHTML=task;
+		ptag.innerHTML= obj.title;
 
 		const ptag2 = document.createElement('p');
 		ptag2.setAttribute('id','pdiscription');
-		ptag2.innerHTML = discription_value;
+		ptag2.innerHTML = obj.discription;
 
 		const delouterbtn = document.createElement('button');
 		delouterbtn.setAttribute('id','delouterdiv');
 		delouterbtn.classList.add("btn-del-div");
 		delouterbtn.innerHTML='Delete';
-		delouterbtn.setAttribute('onclick',`deleteOuterDiv(task${count})`);
+		delouterbtn.setAttribute('onclick',`DeleteTask(${obj.id})`);
 
 		outerdiv.appendChild(ptag);
 		outerdiv.appendChild(ptag2);
 		outerdiv.appendChild(delouterbtn);
 
 
-
+		const innerDiv = document.createElement('div');
+	    innerDiv.classList.add('popup-task','show-popup-task');
+	    innerDiv.setAttribute("id",`${obj.id}`);
 		
-		
-
-		const task_el = document.createElement('div');
-		task_el.classList.add('popup-task');
-		task_el.setAttribute("id",`${count}`);
-		
-        // task_el.setAttribute('ondrag','drag(event)');
-
-
 		const title_content_el = document.createElement('div');
 		title_content_el.classList.add('title_content');
+
+        const titlelabel = document.createElement('label');
+		titlelabel.innerHTML = 'Title';
+
+        const title_input_el = document.createElement('input');
+		title_input_el.classList.add('text','form-control');
+		title_input_el.type = 'text';
+		title_input_el.value = obj.title;
+        title_input_el.setAttribute('id',`title${obj.id}`);
+        title_input_el.setAttribute('readonly', 'readonly');
+
+        title_content_el.appendChild(titlelabel);
+		title_content_el.appendChild(title_input_el);
+
+        innerDiv.appendChild(title_content_el);
 
 
         const discription_content_el = document.createElement('div');
 		discription_content_el.classList.add('discription_content');
 
-		const statusComponent = document.createElement('div');
-				statusComponent.classList.add('mb-3');
-
-	
-
-		
-		
-
-		task_el.appendChild(title_content_el);
-        task_el.appendChild(discription_content_el);  
-        task_el.appendChild(statusComponent);   
-
-
-		
-		let titlelabel = document.createElement('label');
-		titlelabel.innerHTML = 'Title';
-
-		const title_input_el = document.createElement('input');
-		title_input_el.classList.add('text','form-control');
-		title_input_el.type = 'text';
-		title_input_el.value = task;
-        title_input_el.setAttribute('id','dragtarget');
-        // title_content_el.setAttribute('draggable','true');
-        // title_input_el.setAttribute('ondragstart','dragStart(event)');
-        // title_input_el.setAttribute('ondrag','dragging(event)');
-
-
-		title_input_el.setAttribute('readonly', 'readonly');
-
-		let discriptionlabel = document.createElement('label');
+        const discriptionlabel = document.createElement('label');
 		discriptionlabel.innerHTML = 'Discription';
 
         const discription_input_el = document.createElement('input');
 		discription_input_el.classList.add('text','form-control');
 		discription_input_el.type = 'text';
-		discription_input_el.value = discription_value;
+		discription_input_el.value = obj.discription;
 		discription_input_el.setAttribute('readonly', 'readonly');
-        discription_input_el.setAttribute('id','dragtarget2');
-		
-		let statuslabel = document.createElement('label');
-		statuslabel.setAttribute('for', 'status1');
-		statuslabel.innerHTML = 'Status';
-		let selectStatus = document.createElement('select');
-		selectStatus.classList.add("form-control");
-		selectStatus.setAttribute('id', 'status1');
-		let option1 = document.createElement('option');
-		option1.setAttribute('value', 'open');
-		option1.innerHTML = 'Open';
-		let option2 = document.createElement('option');
-		option2.setAttribute('value', 'in-progress');
-		option2.innerHTML = 'In-Progress';
-		let option3 = document.createElement('option');
-		option3.setAttribute('value', 'review');
-		option3.innerHTML = 'Review';
-		let option4 = document.createElement('option');
-		option4.setAttribute('value', 'completed');
-		option4.innerHTML = 'Completed';
+        discription_input_el.setAttribute('id',`discription${obj.id}`);
 
-		// let statusobj = document.getElementById('status1');
-
-		selectStatus.appendChild(option1);
-
-		// if(statusobj.value === 'open'){
-		// 	selectStatus.value = 'open';
-		// }
-		selectStatus.appendChild(option2);
-		// if(statusobj.value === 'in-progress'){
-		// 	selectStatus.value = 'in-progress';
-		// }
-		selectStatus.appendChild(option3);
-		// if(statusobj.value === 'review'){
-		// 	selectStatus.value = 'review';
-		// }
-		selectStatus.appendChild(option4);
-		// if(statusobj.value === 'completed'){
-		// 	selectStatus.value = 'completed';
-		// }
-		// selectStatus.disabled = 'true';
-
-		statusComponent.appendChild(statuslabel);
-		statusComponent.appendChild(selectStatus);
-
-		task_el.appendChild(statusComponent);
-
-
-    
-		title_content_el.appendChild(titlelabel);
-		title_content_el.appendChild(title_input_el);
-
-		discription_content_el.appendChild(discriptionlabel);
+        discription_content_el.appendChild(discriptionlabel);
 		discription_content_el.appendChild(discription_input_el);
 
+        innerDiv.appendChild(discription_content_el);
 
 
-		const task_actions_el = document.createElement('div');
-		task_actions_el.classList.add('actions');
+
+		const statusComponent = document.createElement('div');
+		statusComponent.classList.add('mb-3');
+
+        const statuslabel = document.createElement('label');
+		statuslabel.setAttribute('for', 'status1');
+		statuslabel.innerHTML = 'Status';
+		const selectStatus = document.createElement('select');
+		selectStatus.classList.add("form-control");
+		selectStatus.setAttribute('id', `status${obj.id}`);
+        selectStatus.disabled = true;
+		const option1 = document.createElement('option');
+		option1.setAttribute('value', 'open');
+		option1.innerHTML = 'Open';
+        if(obj.status == 'open'){
+            option1.selected = true;
+        }
+		const option2 = document.createElement('option');
+		option2.setAttribute('value', 'in-progress');
+		option2.innerHTML = 'In-Progress';
+        if(obj.status == 'in-progress'){
+            option2.selected = true;
+        }
+		const option3 = document.createElement('option');
+		option3.setAttribute('value', 'review');
+		option3.innerHTML = 'Review';
+        if(obj.status == 'review'){
+            option3.selected = true;
+        }
+		const option4 = document.createElement('option');
+		option4.setAttribute('value', 'completed');
+		option4.innerHTML = 'Completed';
+        if(obj.status == 'completed'){
+            option4.selected = true;
+        }
+
+        selectStatus.appendChild(option1);
+        selectStatus.appendChild(option2);
+        selectStatus.appendChild(option3);
+        selectStatus.appendChild(option4);
+
+        statusComponent.appendChild(statuslabel);
+		statusComponent.appendChild(selectStatus);
+
+        innerDiv.appendChild(statusComponent);   
+
+
+       outerdiv.appendChild (innerDiv);
+
+
+
+        
+
+
+		// const task_actions_el = document.createElement('div');
+		// task_actions_el.classList.add('actions');
 		
-		const task_edit_el = document.createElement('button');
-		task_edit_el.classList.add('edit-btn');
-		task_edit_el.innerText = 'Edit';
+		// const task_edit_el = document.createElement('button');
+		// task_edit_el.classList.add('edit-btn');
+		// task_edit_el.innerText = 'Edit';
 
-		const task_delete_el = document.createElement('button');
-		task_delete_el.classList.add('remove-btn');
-		task_delete_el.innerText = 'Remove';
+		// const task_delete_el = document.createElement('button');
+		// task_delete_el.classList.add('remove-btn');
+		// task_delete_el.innerText = 'Remove';
 
-		task_actions_el.appendChild(task_edit_el);
-		task_actions_el.appendChild(task_delete_el);
+		// task_actions_el.appendChild(task_edit_el);
+		// task_actions_el.appendChild(task_delete_el);
 
-		task_el.appendChild(task_actions_el);
+	    // innerDiv.appendChild(task_actions_el);
 
-		const open = document.getElementById("open");
+		const toAppend = document.getElementById(`${obj.status}`);
 
-		outerdiv.appendChild(task_el);
-		console.log(outerdiv);
-		open.appendChild(outerdiv);
+        toAppend.appendChild(outerdiv)
+
+        
+
+		// task_edit_el.addEventListener('click', (e) => {
+		// 	if (task_edit_el.innerText.toLowerCase() == "edit") {
+		// 		task_edit_el.innerText = "Save";
+		// 		title_input_el.removeAttribute("readonly");
+		// 		title_input_el.focus();
+        
+		// 	} else {
+		// 		task_edit_el.innerText = "Edit";
+		// 		title_input_el.setAttribute("readonly", "readonly");
+		// 	}
+		// });
+
+		// task_delete_el.addEventListener('click', (e) => {
+		// 	outerdiv.removeChild (innerDiv);
+		// });
 		
+    })
+}
+
+renderData();
+function allowDrop(event) {
+    event.preventDefault();
+}
+
+function drag(event) {
+    event.dataTransfer.setData('text', event.target.id);
+}
+
+function drop(event){
+    event.preventDefault();
+    var data = event.dataTransfer.getData('text');
+    //task1
+    let taskId = Number(data.charAt(4));
+    tasksArray.forEach((obj) => {
+        if(obj.id == taskId){
+            obj.status = event.target.id;
+        }
+    })
+    event.target.appendChild(document.getElementById(data));
+	setTasksArray();
+    renderData();
+}
+
+addTaskButton.addEventListener('click', createTaskObject);
 
-		title.value = '';
-        discription_content.value= '';
-		wrapper_ele.setAttribute('class', 'wrapper');
-
-		task_edit_el.addEventListener('click', (e) => {
-			if (task_edit_el.innerText.toLowerCase() == "edit") {
-				task_edit_el.innerText = "Save";
-				title_input_el.removeAttribute("readonly");
-				title_input_el.focus();
-        
-			} else {
-				task_edit_el.innerText = "Edit";
-				title_input_el.setAttribute("readonly", "readonly");
-			}
-		});
-
-		task_delete_el.addEventListener('click', (e) => {
-			outerdiv.removeChild(task_el);
-		});
-	
-		// console.log((obj));
-		// tasks.push(obj);
-		count++;
-		// renderData();
-
-	});
-
-
-
-    let close_btn = document.querySelector(".btn-close");
-    close_btn.addEventListener('click',()=>{
-        title.value = '';
-        discription_content.value= '';
-        wrapper_ele.setAttribute('class', 'wrapper');
-    });
-
-    
-	function allowDrop(event) {
-		event.preventDefault();
-	}
-	
-	function drag(event) {
-		event.dataTransfer.setData('text', event.target.id);
-	}
-	
-	function drop(event){
-		event.preventDefault();
-		var data = event.dataTransfer.getData('text');
-		event.target.appendChild(document.getElementById(data));
-	}
-
-
-
-// 	const addTaskButton = document.getElementById('addTaskBtn');
-// const closeTaskDiscriptionButton = document.getElementById('closeTaskDiscription');
-// const addTask = document.getElementById('add-task');
-
-// let startDate = document.getElementById('start-date');
-// let endDate = document.getElementById('end-date');
-
-// const localStorageKey = "tasksArray";
-
-// const getTasksArray = () => {
-//     let array = localStorage.getItem(localStorageKey);
-
-//     if(!array){
-//         return [];
-//     }
-
-//     return JSON.parse(array);
-// }
-
-// let tasks = getTasksArray();
-
-// const setTasksArray = () => {
-//     const array = JSON.stringify(tasks);
-//     localStorage.setItem(localStorageKey, array);
-// }
-
-// let count = tasks.length >= 1 ? tasks[tasks.length - 1].Id + 1 : 1;
-
-// addTaskButton.addEventListener('click', toggleTaskBar);
-// closeTaskDiscriptionButton.addEventListener('click', toggleTaskBar);
-
-// function toggleTaskBar(){ 
-//     startDate.valueAsDate = new Date();
-//     endDate.valueAsDate = new Date();
-//     document.getElementById('task-discription').classList.toggle('active');
-// }
-
-
-// addTask.addEventListener('click', addingTask);
-
-// function addingTask(){
-//     let task = document.getElementById('task').value.trim();
-//     if(task === ''){
-//         alert('Task cannot be empty!');
-//     }
-//     let start = startDate.value.split("");
-//     let end = endDate.value.split("");
-
-//     start = start.filter((element) => {
-//        return element != '-';
-//     })
-//     end = end.filter(element => {
-//         return element != '-';
-//     })
-//     start = Number(start.join(''));
-//     end = Number(end.join(''));
-    
-//     if(end < start){
-//         alert("Task cannot end before it start's.")
-//         return;
-//     }
-    
-//     let discription = document.getElementById('discription').value;
-
-//     if(discription === ''){
-//         alert('Discription cannot be empty.');
-//         return;
-//     }
-
-//     let status = document.getElementById('status').value;
-
-//     let obj = {
-//         Id: count,
-//         Task: task,
-//         Status: status,
-//         StartDate: startDate.value,
-//         EndDate: endDate.value,
-//         Discription: discription
-//     }
-//     console.log((obj));
-//     tasks.push(obj);
-//     count++;
-
-//     toggleTaskBar();
-//     clearInnerHtml();
-//     renderData();
-//     setTasksArray();
-// }
-
-// function clearInnerHtml(){
-//     document.getElementById('open').innerHTML ='';
-//     document.getElementById('in-progress').innerHTML ='';
-//     document.getElementById('review').innerHTML ='';
-//     document.getElementById('completed').innerHTML ='';
-// }
-
-// function renderData(){
-//     tasks.forEach((obj) =>{
-//         let outerDiv = document.createElement('div');
-//         outerDiv.classList.add('createdTasks', 'border-dark-subtle', 'm-2');
-//         outerDiv.setAttribute('ondblclick', `renderTasksData(${obj.Id})`);
-//         outerDiv.setAttribute('draggable', 'true');
-//         outerDiv.setAttribute('ondragstart', 'drag(event)');
-//         outerDiv.setAttribute('id', `task${obj.Id}`);
-
-//         let taskTag = document.createElement('p');
-//         taskTag.innerHTML = obj.Task;
-//         let discriptionTag = document.createElement('p');
-//         discriptionTag.innerHTML = obj.Discription;
-        
-//         outerDiv.appendChild(taskTag);
-//         outerDiv.appendChild(discriptionTag);
-//         let innnerDiv = document.createElement('div');
-//         innnerDiv.classList.add('tasks', 'active');
-//         innnerDiv.setAttribute('id', `${obj.Id}`);
-
-//         let component1 = document.createElement('div');
-//         component1.classList.add('mb-3');
-
-//         let labelcomp1 = document.createElement('label');
-//         labelcomp1.setAttribute('for', 'task');
-//         labelcomp1.classList.add('form-label');
-//         labelcomp1.innerText = 'Title';
-//         let inputcomp1 = document.createElement('input');
-//         inputcomp1.setAttribute('type', 'text');
-//         inputcomp1.classList.add('form-control')
-//         inputcomp1.value = obj.Task;
-//         inputcomp1.disabled = true;
-
-//         component1.appendChild(labelcomp1);
-//         component1.appendChild(inputcomp1);
-
-//         innnerDiv.appendChild(component1);
-
-//         let statusComponent = document.createElement('div');
-//         statusComponent.classList.add('mb-3');
-
-//         let statuslabel = document.createElement('label');
-//         statuslabel.setAttribute('for', `status${obj.Id}`);
-//         statuslabel.innerHTML = 'Status';
-//         let selectStatus = document.createElement('select');
-//         selectStatus.classList.add("form-control");
-//         selectStatus.setAttribute('id', `status${obj.Id}`);
-//         let option1 = document.createElement('option');
-//         option1.setAttribute('value', 'open');
-//         option1.innerHTML = 'Open';
-//         let option2 = document.createElement('option');
-//         option2.setAttribute('value', 'in-progress');
-//         option2.innerHTML = 'In-Progress';
-//         let option3 = document.createElement('option');
-//         option3.setAttribute('value', 'review');
-//         option3.innerHTML = 'Review';
-//         let option4 = document.createElement('option');
-//         option4.setAttribute('value', 'completed');
-//         option4.innerHTML = 'Completed';
-//         selectStatus.appendChild(option1);
-//         if(obj.Status === 'open'){
-//             selectStatus.value = 'open';
-//         }
-//         selectStatus.appendChild(option2);
-//         if(obj.Status === 'in-progress'){
-//             selectStatus.value = 'in-progress';
-//         }
-//         selectStatus.appendChild(option3);
-//         if(obj.Status === 'review'){
-//             selectStatus.value = 'review';
-//         }
-//         selectStatus.appendChild(option4);
-//         if(obj.Status === 'completed'){
-//             selectStatus.value = 'completed';
-//         }
-//         selectStatus.disabled = 'true';
-
-//         statusComponent.appendChild(statuslabel);
-//         statusComponent.appendChild(selectStatus);
-
-//         innnerDiv.appendChild(statusComponent);
-
-//         let component2 = document.createElement('div');
-//         component2.classList.add('mb-3');
-
-//         let labelcomp2 = document.createElement('label');
-//         labelcomp2.setAttribute('for', 'startdate');
-//         labelcomp2.classList.add('form-label');
-//         labelcomp2.innerText = 'Start Date';
-
-//         let inputcomp2 = document.createElement('input');
-//         inputcomp2.setAttribute('type', 'date');
-//         inputcomp2.classList.add('form-control')
-//         inputcomp2.disabled = true;
-//         inputcomp2.value = obj.StartDate;
-
-//         component2.appendChild(labelcomp2);
-//         component2.appendChild(inputcomp2);
-
-//         innnerDiv.appendChild(component2);
-
-//         let component3 = document.createElement('div');
-//         component3.classList.add('mb-3');
-
-//         let labelcomp3 = document.createElement('label');
-//         labelcomp3.setAttribute('for', 'endDate');
-//         labelcomp3.classList.add('form-label');
-//         labelcomp3.innerText = 'End Date';
-
-//         let inputcomp3 = document.createElement('input');
-//         inputcomp3.setAttribute('type', 'date');
-//         inputcomp3.classList.add('form-control')
-//         inputcomp3.disabled = true;
-//         inputcomp3.value = obj.EndDate;
-
-//         component3.appendChild(labelcomp3);
-//         component3.appendChild(inputcomp3);
-
-//         innnerDiv.appendChild(component3);
-
-//         let component4 = document.createElement('div');
-//         component4.classList.add('mb-3');
-//         let labelcomp4 = document.createElement('label');
-//         labelcomp4.setAttribute('for', 'discription');
-//         labelcomp4.classList.add('form-label');
-//         labelcomp4.innerText = 'Discription';
-
-//         let textArea = document.createElement('textarea');
-//         textArea.classList.add('form-control')
-//         textArea.setAttribute('rows', '3');
-//         textArea.setAttribute('style', 'resize: none');
-//         textArea.value = obj.Discription;
-//         textArea.disabled = true;
-
-//         component4.appendChild(labelcomp4);
-//         component4.appendChild(textArea);
-
-//         innnerDiv.appendChild(component4);
-
-//         let component5 = document.createElement('div');
-//         component5.classList.add('add-btn');
-//         component5.innerText = 'x';
-//         component5.setAttribute('onclick', `renderTasksData(${obj.Id})`)
-
-//         innnerDiv.appendChild(component5);
-        
-//         let deleteButton = document.createElement('button');
-//         deleteButton.setAttribute('type', 'button');
-//         deleteButton.classList.add('btn', 'btn-danger');
-//         deleteButton.innerText = 'Delete Task';
-//         deleteButton.setAttribute('onclick', `deleteTask(${obj.Id})`);
-
-//         innnerDiv.appendChild(deleteButton);
-
-//         outerDiv.appendChild(innnerDiv);
-
-//         document.getElementById(`${obj.Status}`).appendChild(outerDiv);
-
-//     });
-
-// }
-
-// renderData();
-
-// function deleteTask(id){
-//     tasks = tasks.filter((obj) => {
-//         return obj.Id != id;
-//     })
-//     setTasksArray();
-//     clearInnerHtml();
-//     renderData();
-// }
-
-// function renderTasksData(id){
-//     document.getElementById(id).classList.toggle('active');
-// }
-
-// function allowDrop(event) {
-//     event.preventDefault();
-// }
-
-// function drag(event) {
-//     event.dataTransfer.setData('text', event.target.id);
-// }
-
-// function drop(event){
-//     event.preventDefault();
-//     var data = event.dataTransfer.getData('text');
-//     let id = Number(data.charAt(4));
-//     if(event.target.id === 'open'){
-//         return;
-//     }
-//     if(tasks[id - 1].Status === 'completed'){
-//         return;
-//     };
-//     event.target.appendChild(document.getElementById(data));
-    
-//     tasks[id - 1].Status = event.target.id;
-//     setTasksArray();
-//     clearInnerHtml();
-//     renderData();
-// }
